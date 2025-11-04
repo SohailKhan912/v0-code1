@@ -6,7 +6,7 @@ import { TrustSection } from "@/components/trust-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { CTASection } from "@/components/cta-section"
 import { NewsletterSection } from "@/components/newsletter-section"
-import { LiveChatWidget } from "@/components/live-chat-widget"
+import { ExpertHelpBox } from "@/components/expert-help-box"
 import { Footer } from "@/components/footer"
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
       <NewsletterSection />
       <CTASection />
       <Footer />
-      <LiveChatWidget />
+      <ExpertHelpBox />
     </div>
   )
 }

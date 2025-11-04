@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
-import { Maximize2, Minimize2, RotateCcw, ZoomIn, ZoomOut } from "lucide-react"
+import { Maximize2, Minimize2, RotateCcw, ZoomIn, ZoomOut, RotateCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface Door3DProps {
@@ -27,7 +27,9 @@ export function Realistic3DDoor({ width, height, material, frame, finish, featur
     phi: Math.PI / 6,
     radius: 3,
   })
+  const [isAutoRotating, setIsAutoRotating] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const autoRotateSpeedRef = useRef(0.005)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -274,6 +276,11 @@ export function Realistic3DDoor({ width, height, material, frame, finish, featur
       requestAnimationFrame(animate)
 
       const state = orbitStateRef.current
+
+      if (isAutoRotating) {
+        state.theta += autoRotateSpeedRef.current
+      }
+
       const x = state.radius * Math.sin(state.phi) * Math.cos(state.theta)
       const y = state.radius * Math.cos(state.phi)
       const z = state.radius * Math.sin(state.phi) * Math.sin(state.theta)
@@ -304,7 +311,7 @@ export function Realistic3DDoor({ width, height, material, frame, finish, featur
       renderer.dispose()
       pmremGenerator.dispose()
     }
-  }, [width, height, material, frame, finish, features])
+  }, [width, height, material, frame, finish, features, isAutoRotating])
 
   const resetView = () => {
     orbitStateRef.current = {
@@ -312,6 +319,11 @@ export function Realistic3DDoor({ width, height, material, frame, finish, featur
       phi: Math.PI / 6,
       radius: 3,
     }
+    setIsAutoRotating(false)
+  }
+
+  const toggle360View = () => {
+    setIsAutoRotating(!isAutoRotating)
   }
 
   const zoomIn = () => {
@@ -343,6 +355,9 @@ export function Realistic3DDoor({ width, height, material, frame, finish, featur
         <Button size="sm" variant="ghost" onClick={resetView} title="Reset View">
           <RotateCcw className="w-4 h-4" />
         </Button>
+        <Button size="sm" variant={isAutoRotating ? "default" : "ghost"} onClick={toggle360View} title="360° View">
+          <RotateCw className="w-4 h-4" />
+        </Button>
         <Button size="sm" variant="ghost" onClick={zoomIn} title="Zoom In">
           <ZoomIn className="w-4 h-4" />
         </Button>
@@ -359,6 +374,7 @@ export function Realistic3DDoor({ width, height, material, frame, finish, featur
         <ul className="text-xs text-muted-foreground space-y-1">
           <li>• Drag to rotate</li>
           <li>• Scroll to zoom</li>
+          <li>• Click 360° for auto-rotation</li>
           <li>• Touch & drag on mobile</li>
         </ul>
       </div>

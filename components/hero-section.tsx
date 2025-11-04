@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Zap, Play, Shield, Award, TrendingUp } from "lucide-react"
+import { ArrowRight, Zap, Play, Shield, Award, TrendingUp, X } from "lucide-react"
 import { useState } from "react"
 
 export function HeroSection() {
@@ -79,35 +79,60 @@ export function HeroSection() {
             </div>
           </div>
 
+          {/* Right content - Image/Video */}
           <div className="relative h-96 md:h-[600px] rounded-2xl overflow-hidden group">
-            <img
-              src="/premium-modern-glass-door-entrance-with-ar-visuali.jpg"
-              alt="Glass Door Showcase"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent" />
+            {!isVideoPlaying ? (
+              <>
+                <img
+                  src="/premium-modern-glass-door-entrance-with-ar-visuali.jpg"
+                  alt="Glass Door Showcase"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent" />
 
-            {/* Video play button overlay */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={() => setIsVideoPlaying(true)}
-                className="w-20 h-20 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center hover:scale-110 transition-transform shadow-2xl"
-              >
-                <Play className="w-8 h-8 text-primary-foreground ml-1" fill="currentColor" />
-              </button>
-            </div>
+                {/* Video play button overlay */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => setIsVideoPlaying(true)}
+                    className="w-20 h-20 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center hover:scale-110 transition-transform shadow-2xl"
+                  >
+                    <Play className="w-8 h-8 text-primary-foreground ml-1" fill="currentColor" />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="relative w-full h-full bg-black">
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/btYbp8mk9Ho?autoplay=1&rel=0"
+                  title="Glass Door Showcase"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+
+                {/* Close button */}
+                <button
+                  onClick={() => setIsVideoPlaying(false)}
+                  className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors z-10"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              </div>
+            )}
 
             {/* Floating feature cards */}
-            <div className="absolute bottom-6 left-6 right-6 flex gap-3">
-              <div className="flex-1 bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-                <p className="text-xs text-muted-foreground mb-1">AR Preview</p>
-                <p className="text-sm font-semibold">See in Your Space</p>
+            {!isVideoPlaying && (
+              <div className="absolute bottom-6 left-6 right-6 flex gap-3">
+                <div className="flex-1 bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+                  <p className="text-xs text-muted-foreground mb-1">AR Preview</p>
+                  <p className="text-sm font-semibold">See in Your Space</p>
+                </div>
+                <div className="flex-1 bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+                  <p className="text-xs text-muted-foreground mb-1">3D Customize</p>
+                  <p className="text-sm font-semibold">Real-Time Design</p>
+                </div>
               </div>
-              <div className="flex-1 bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-                <p className="text-xs text-muted-foreground mb-1">3D Customize</p>
-                <p className="text-sm font-semibold">Real-Time Design</p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

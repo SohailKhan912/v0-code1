@@ -23,8 +23,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/catalog" className="text-muted-foreground hover:text-primary">
-                  Pricing
+                <Link href="/track-order" className="text-muted-foreground hover:text-primary">
+                  Track Order
                 </Link>
               </li>
             </ul>
@@ -38,13 +38,13 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-muted-foreground hover:text-primary">
+                <Link href="/contact" className="text-muted-foreground hover:text-primary">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-muted-foreground hover:text-primary">
-                  Blog
+                <Link href="/shipping" className="text-muted-foreground hover:text-primary">
+                  Shipping
                 </Link>
               </li>
             </ul>
@@ -53,18 +53,18 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary">
-                  Privacy
+                <Link href="/privacy-policy" className="text-muted-foreground hover:text-primary">
+                  Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary">
-                  Terms
+                <Link href="/terms-conditions" className="text-muted-foreground hover:text-primary">
+                  Terms & Conditions
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary">
-                  Cookies
+                <Link href="/refund-policy" className="text-muted-foreground hover:text-primary">
+                  Refund Policy
                 </Link>
               </li>
             </ul>

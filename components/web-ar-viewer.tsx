@@ -1,7 +1,9 @@
 "use client"
 
+import type React from "react"
+
 import { useEffect, useRef, useState } from "react"
-import { Camera, X, RotateCw, Smartphone } from "lucide-react"
+import { Camera, X, RotateCw, Smartphone, Move } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
@@ -22,13 +24,14 @@ export function WebARViewer({ width, height, material, frame, finish, features }
   const [cameraActive, setCameraActive] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const animationFrameRef = useRef<number>()
-  const doorRotationRef = useRef(0)
+  const doorPositionRef = useRef({ x: 0.5, y: 0.5, scale: 1 })
+  const [isDragging, setIsDragging] = useState(false)
 
   useEffect(() => {
     const checkARSupport = async () => {
       if (typeof navigator !== "undefined") {
         const hasWebGL = !!document.createElement("canvas").getContext("webgl2")
-        const hasCamera = (await navigator.mediaDevices?.enumerateDevices) ? true : false
+        const hasCamera = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
         setIsARSupported(hasWebGL && hasCamera)
       }
     }
@@ -39,7 +42,7 @@ export function WebARViewer({ width, height, material, frame, finish, features }
     try {
       setError(null)
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } },
         audio: false,
       })
 
@@ -49,7 +52,7 @@ export function WebARViewer({ width, height, material, frame, finish, features }
         drawARFrame()
       }
     } catch (err) {
-      setError("Camera access denied. Please enable camera permissions.")
+      setError("Camera access denied. Please enable camera permissions in your browser settings.")
       setCameraActive(false)
     }
   }
@@ -75,26 +78,25 @@ export function WebARViewer({ width, height, material, frame, finish, features }
 
     const drawFrame = () => {
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth || window.innerWidth
+        canvas.height = video.videoHeight || window.innerHeight
+
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
         drawDoorOnCanvas(ctx, canvas.width, canvas.height)
       }
       animationFrameRef.current = requestAnimationFrame(drawFrame)
     }
 
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-
     drawFrame()
   }
 
   const drawDoorOnCanvas = (ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) => {
-    doorRotationRef.current = (doorRotationRef.current + 1) % 360
+    const pos = doorPositionRef.current
+    const doorWidthPx = (width / 1000) * 150 * pos.scale
+    const doorHeightPx = (height / 1000) * 200 * pos.scale
 
-    const doorWidthPx = (width / 1000) * 100
-    const doorHeightPx = (height / 1000) * 150
-
-    const doorX = (canvasWidth - doorWidthPx) / 2
-    const doorY = (canvasHeight - doorHeightPx) / 2
+    const doorX = canvasWidth * pos.x - doorWidthPx / 2
+    const doorY = canvasHeight * pos.y - doorHeightPx / 2
 
     // Background
     ctx.fillStyle = "rgba(0, 0, 0, 0.3)"
@@ -175,8 +177,27 @@ export function WebARViewer({ width, height, material, frame, finish, features }
     ctx.strokeRect(doorX + doorWidthPx + 5, doorY + doorHeightPx + 5, cornerSize, cornerSize)
   }
 
+  const handlePointerDown = (e: React.PointerEvent) => {
+    setIsDragging(true)
+  }
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging || !canvasRef.current) return
+
+    const rect = canvasRef.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width
+    const y = (e.clientY - rect.top) / rect.height
+
+    doorPositionRef.current.x = Math.max(0.2, Math.min(0.8, x))
+    doorPositionRef.current.y = Math.max(0.2, Math.min(0.8, y))
+  }
+
+  const handlePointerUp = () => {
+    setIsDragging(false)
+  }
+
   const resetView = () => {
-    doorRotationRef.current = 0
+    doorPositionRef.current = { x: 0.5, y: 0.5, scale: 1 }
   }
 
   return (
@@ -189,10 +210,10 @@ export function WebARViewer({ width, height, material, frame, finish, features }
                 <Camera className="w-6 h-6" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-lg mb-2">Real-Time AR Preview</h3>
+                <h3 className="font-bold text-lg mb-2">Enhanced AR Preview</h3>
                 <p className="text-sm text-gray-700 mb-4">
-                  See your custom glass door in augmented reality! Point your camera at a space and visualize exactly
-                  how your door will look before ordering.
+                  Experience augmented reality with improved placement controls! Point your camera at a space, drag to
+                  position your door, and see exactly how it will look in real-time.
                 </p>
                 {isARSupported ? (
                   <Button onClick={startCamera} size="lg" className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
@@ -201,7 +222,7 @@ export function WebARViewer({ width, height, material, frame, finish, features }
                   </Button>
                 ) : (
                   <p className="text-red-600 font-semibold">
-                    AR not supported on this device. Please use a modern mobile device with camera.
+                    AR not supported on this device. Please use a modern mobile device with camera access.
                   </p>
                 )}
               </div>
@@ -218,9 +239,9 @@ export function WebARViewer({ width, height, material, frame, finish, features }
               </p>
             </Card>
             <Card className="bg-gray-50 p-4">
-              <p className="font-semibold text-sm mb-2">Step 2: Visualize</p>
+              <p className="font-semibold text-sm mb-2">Step 2: Place & Adjust</p>
               <p className="text-xs text-gray-600">
-                See the exact size, color, and materials in real space with lighting.
+                Drag the door to position it perfectly in your space with real-time preview.
               </p>
             </Card>
             <Card className="bg-gray-50 p-4">
@@ -237,18 +258,26 @@ export function WebARViewer({ width, height, material, frame, finish, features }
             playsInline
             className="absolute inset-0 w-full h-full object-cover hidden"
             onLoadedMetadata={() => {
-              if (canvasRef.current) {
-                canvasRef.current.width = window.innerWidth
-                canvasRef.current.height = window.innerHeight
+              if (canvasRef.current && videoRef.current) {
+                canvasRef.current.width = videoRef.current.videoWidth || window.innerWidth
+                canvasRef.current.height = videoRef.current.videoHeight || window.innerHeight
               }
             }}
           />
-          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ display: "block" }} />
+          <canvas
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full cursor-move"
+            style={{ display: "block", touchAction: "none" }}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+          />
 
           <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-4 z-10">
             <Button onClick={resetView} size="lg" className="bg-blue-500 hover:bg-blue-600 text-white gap-2">
               <RotateCw className="w-4 h-4" />
-              Reset
+              Reset Position
             </Button>
             <Button onClick={stopCamera} size="lg" className="bg-red-500 hover:bg-red-600 text-white gap-2">
               <X className="w-4 h-4" />
@@ -256,8 +285,11 @@ export function WebARViewer({ width, height, material, frame, finish, features }
             </Button>
           </div>
 
-          <div className="absolute top-6 left-0 right-0 text-center text-white text-sm font-semibold bg-black/50 py-2 rounded">
-            Move your device to position the door • Tap Reset to recenter
+          <div className="absolute top-6 left-0 right-0 text-center">
+            <div className="inline-flex items-center gap-2 bg-black/70 backdrop-blur-sm text-white text-sm font-semibold px-4 py-2 rounded-full">
+              <Move className="w-4 h-4" />
+              <span>Drag to position • Tap Reset to recenter</span>
+            </div>
           </div>
         </div>
       )}
