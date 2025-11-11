@@ -93,7 +93,6 @@ export default function CustomizePage({ params }: { params: Promise<{ id?: strin
             </div>
 
             <div className="lg:col-span-2">
-              {/* Passing productId is fine; PreviewSection accepts it optionally */}
               <PreviewSection config={doorConfig} productId={productId} />
             </div>
           </div>
@@ -103,4 +102,3 @@ export default function CustomizePage({ params }: { params: Promise<{ id?: strin
     </div>
   )
 }
-              
