@@ -1,0 +1,37 @@
+# Node modules & build folders
+node_modules/
+.next/
+dist/
+out/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Logs & debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / Editor stuff
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# AR-related files (❌ exclude AR module)
+components/web-ar-viewer.tsx
+components/realistic-3d-door.tsx
+components/model-viewer-example/
+app/ar-demo/
+app/model-viewer-example/
+public/ar-models/
+public/3d/
+
+# Ignore test DB dumps or zip backups
+*.zip
+*.bak
+*.tar.gz

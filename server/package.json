@@ -1,0 +1,15 @@
+{
+    "type": "module",
+    "name": "code",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+      "dev": "next dev",
+      "start": "node server/server.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+  }
+  
